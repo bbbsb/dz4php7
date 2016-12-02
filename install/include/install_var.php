@@ -64,7 +64,7 @@ define('MISSING_PARAMETER', 33);
 define('LOCK_FILE_NOT_TOUCH', 34);
 
 $func_items = [
-	function_exists('mysqli_connect') ? 'mysqli_connect' : 'mysql_connect',
+	'mysqli_connect',
 	'gethostbyname',
 	'file_get_contents',
 	'xml_parser_create'

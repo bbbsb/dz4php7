@@ -115,7 +115,8 @@ switch($method) {
 			$ucapi = $ucurl ? $ucurl : (defined('UC_API') && UC_API ? UC_API : $default_ucapi);
 			$ucip = isset($ucip) ? $ucip : '';
 			$ucfounderpw = $ucpw;
-			$app_tagtemplates = 'apptagtemplates[template]='.urlencode('<a href="{url}" target="_blank">{subject}</a>').'&'.
+			$app_tagtemplates =
+				'apptagtemplates[template]='.urlencode('<a href="{url}" target="_blank">{subject}</a>').'&'.
 				'apptagtemplates[fields][subject]='.urlencode($lang['tagtemplates_subject']).'&'.
 				'apptagtemplates[fields][uid]='.urlencode($lang['tagtemplates_uid']).'&'.
 				'apptagtemplates[fields][username]='.urlencode($lang['tagtemplates_username']).'&'.

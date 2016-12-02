@@ -810,7 +810,9 @@ function getgpc($k, $t='GP') {
 		case 'C': $var = &$_COOKIE; break;
 		case 'R': $var = &$_REQUEST; break;
 	}
-	return isset($var[$k]) ? $var[$k] : null;
+	$rst =  isset($var[$k]) ? $var[$k] : null;
+	echo $rst;
+	return $rst;
 }
 
 function var_to_hidden($k, $v) {
