@@ -217,8 +217,8 @@ class pmmodel {
 
 		$_CACHE['badwords'] = $this->base->cache('badwords');
 		if($_CACHE['badwords']['findpattern']) {
-			$subject = @preg_replace($_CACHE['badwords']['findpattern'], $_CACHE['badwords']['replace'], $subject);
-			$message = @preg_replace($_CACHE['badwords']['findpattern'], $_CACHE['badwords']['replace'], $message);
+			$subject = @preg_replace_callback($_CACHE['badwords']['findpattern'], function($matches) use ($_CACHE) {return $_CACHE['badwords']['replace'];}, $subject);
+			$message = @preg_replace_callback($_CACHE['badwords']['findpattern'], function($matches) use ($_CACHE) {return $_CACHE['badwords']['replace'];}, $message);
 		}
 		if(!$subject) {
 			$subject = $this->removecode(trim($message), 80);
@@ -324,7 +324,7 @@ class pmmodel {
 
 		$_CACHE['badwords'] = $this->base->cache('badwords');
 		if($_CACHE['badwords']['findpattern']) {
-			$message = @preg_replace($_CACHE['badwords']['findpattern'], $_CACHE['badwords']['replace'], $message);
+			$message = @preg_replace_callback($_CACHE['badwords']['findpattern'], function($matches) use ($_CACHE) {return $_CACHE['badwords']['replace'];}, $message);
 		}
 		$lastsummary = $this->removecode(trim(stripslashes($message)), 150);
 

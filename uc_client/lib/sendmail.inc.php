@@ -83,10 +83,10 @@ if($mail_setting['mailsend'] == 1 && function_exists('mail')) {
 		$email_from = $mail_setting['mailfrom'];
 	}
 
-	fputs($fp, "MAIL FROM: <".preg_replace("/.*\<(.+?)\>.*/", "\\1", $email_from).">\r\n");
+	fputs($fp, "MAIL FROM: <".preg_replace_callback("/.*\<(.+?)\>.*/", function($matches){return $matches[1];}, $email_from).">\r\n");
 	$lastmessage = fgets($fp, 512);
 	if(substr($lastmessage, 0, 3) != 250) {
-		fputs($fp, "MAIL FROM: <".preg_replace("/.*\<(.+?)\>.*/", "\\1", $email_from).">\r\n");
+		fputs($fp, "MAIL FROM: <".preg_replace_callback("/.*\<(.+?)\>.*/", function($matches){return $matches[1];}, $email_from).">\r\n");
 		$lastmessage = fgets($fp, 512);
 		if(substr($lastmessage, 0, 3) != 250) {
 			return false;
@@ -97,10 +97,10 @@ if($mail_setting['mailsend'] == 1 && function_exists('mail')) {
 	foreach(explode(',', $mail['email_to']) as $touser) {
 		$touser = trim($touser);
 		if($touser) {
-			fputs($fp, "RCPT TO: <".preg_replace("/.*\<(.+?)\>.*/", "\\1", $touser).">\r\n");
+			fputs($fp, "RCPT TO: <".preg_replace_callback("/.*\<(.+?)\>.*/", function($matches){return $matches[1];}, $touser).">\r\n");
 			$lastmessage = fgets($fp, 512);
 			if(substr($lastmessage, 0, 3) != 250) {
-				fputs($fp, "RCPT TO: <".preg_replace("/.*\<(.+?)\>.*/", "\\1", $touser).">\r\n");
+				fputs($fp, "RCPT TO: <".preg_replace_callback("/.*\<(.+?)\>.*/", function($matches){return $matches[1];}, $touser).">\r\n");
 				$lastmessage = fgets($fp, 512);
 				return false;
 			}

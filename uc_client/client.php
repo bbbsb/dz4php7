@@ -53,7 +53,7 @@ if(!function_exists('dhtmlspecialchars')) {
 			if($flags === null) {
 				$string = str_replace(array('&', '"', '<', '>'), array('&amp;', '&quot;', '&lt;', '&gt;'), $string);
 				if(strpos($string, '&amp;#') !== false) {
-					$string = preg_replace('/&amp;((#(\d{3,5}|x[a-fA-F0-9]{4}));)/', '&\\1', $string);
+					$string = preg_replace_callback('/&amp;((#(\d{3,5}|x[a-fA-F0-9]{4}));)/', function($matches){return '&'.$matches[1];}, $string);
 				}
 			} else {
 				if(PHP_VERSION < '5.4.0') {

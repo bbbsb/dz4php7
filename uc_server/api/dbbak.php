@@ -515,7 +515,7 @@ if($get['method'] == 'export') {
 	}
 
 	$get['volume']++;
-	$next_dumpfile = preg_replace('/^(\d+)\_(\w+)\-(\d+)\.sql$/', '\\1_\\2-'.$get['volume'].'.sql', $get['dumpfile']);
+	$next_dumpfile = preg_replace_callback('/^(\d+)\_(\w+)\-(\d+)\.sql$/', function($matches) use ($get) {return $matches[1].'_'.$matches[2].'-'.$get['volume'].'.sql';}, $get['dumpfile']);
 	if(!is_file(BACKUP_DIR.$get['sqlpath'].'/'.$get['dumpfile'])) {
 		if(is_file(BACKUP_DIR.$get['sqlpath'].'/'.$next_dumpfile)) {
 			api_msg('bak_file_lose', $get['dumpfile']);
@@ -661,7 +661,7 @@ function get_dumpfile_by_path($path) {
 		$filename = BACKUP_DIR.$path.'/'.$entry;
 		if(is_file($filename)) {
 			if(preg_match('/^\d+\_\w+\-\d+\.sql$/', $entry)) {
-				$file_bakfile = preg_replace('/^(\d+)\_(\w+)\-(\d+)\.sql$/', '\\1_\\2-1.sql', $entry);
+				$file_bakfile = preg_replace_callback('/^(\d+)\_(\w+)\-(\d+)\.sql$/', function($matches){return $matches[1].'_'.$matches[2].'-1.sql';}, $entry);
 				if(is_file(BACKUP_DIR.$path.'/'.$file_bakfile)) {
 					return $file_bakfile;
 				} else {

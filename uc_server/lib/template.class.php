@@ -73,42 +73,42 @@ class template {
 
 	function complie() {
 		$template = file_get_contents($this->tplfile);
-		$template = preg_replace("/\<\!\-\-\{(.+?)\}\-\-\>/s", "{\\1}", $template);
-		$template = preg_replace("/\{lang\s+(\w+?)\}/ise", "\$this->lang('\\1')", $template);
+		$template = preg_replace_callback("/\<\!\-\-\{(.+?)\}\-\-\>/s", function($matches){return "{".$matches[1]."}";}, $template);
+		$template = preg_replace_callback("/\{lang\s+(\w+?)\}/ise", function($matches){return "\$this->lang('".$matches[1]."')";}, $template);
 
-		$template = preg_replace("/\{($this->var_regexp)\}/", "<?=\\1?>", $template);
-		$template = preg_replace("/\{($this->const_regexp)\}/", "<?=\\1?>", $template);
-		$template = preg_replace("/(?<!\<\?\=|\\\\)$this->var_regexp/", "<?=\\0?>", $template);
+		$template = preg_replace_callback("/\{($this->var_regexp)\}/", function($matches){return "<?=".$matches[1]."?>";}, $template);
+		$template = preg_replace_callback("/\{($this->const_regexp)\}/", function($matches){return "<?=".$matches[1]."?>";}, $template);
+		$template = preg_replace_callback("/(?<!\<\?\=|\\\\)$this->var_regexp/", function($matches){return "<?=".$matches[0]."?>";}, $template);
 
-		$template = preg_replace("/\<\?=(\@?\\\$[a-zA-Z_]\w*)((\[[\\$\[\]\w]+\])+)\?\>/ies", "\$this->arrayindex('\\1', '\\2')", $template);
+		$template = preg_replace_callback("/\<\?=(\@?\\\$[a-zA-Z_]\w*)((\[[\\$\[\]\w]+\])+)\?\>/ies", function($matches){return "\$this->arrayindex('".$matches[1]."', '".$matches[2]."')";}, $template);
 
-		$template = preg_replace("/\{\{eval (.*?)\}\}/ies", "\$this->stripvtag('<? \\1?>')", $template);
-		$template = preg_replace("/\{eval (.*?)\}/ies", "\$this->stripvtag('<? \\1?>')", $template);
-		$template = preg_replace("/\{for (.*?)\}/ies", "\$this->stripvtag('<? for(\\1) {?>')", $template);
+		$template = preg_replace_callback("/\{\{eval (.*?)\}\}/ies", function($matches){return "\$this->stripvtag('<? ".$matches[1]."?>')";}, $template);
+		$template = preg_replace_callback("/\{eval (.*?)\}/ies", function($matches){return "\$this->stripvtag('<? ".$matches[1]."?>')";}, $template);
+		$template = preg_replace_callback("/\{for (.*?)\}/ies", function($matches){return "\$this->stripvtag('<? for(".$matches[1].") {?>')";}, $template);
 
-		$template = preg_replace("/\{elseif\s+(.+?)\}/ies", "\$this->stripvtag('<? } elseif(\\1) { ?>')", $template);
+		$template = preg_replace_callback("/\{elseif\s+(.+?)\}/ies", function($matches){return "\$this->stripvtag('<? } elseif(".$matches[1].") {?>')";}, $template);
 
 		for($i=0; $i<2; $i++) {
-			$template = preg_replace("/\{loop\s+$this->vtag_regexp\s+$this->vtag_regexp\s+$this->vtag_regexp\}(.+?)\{\/loop\}/ies", "\$this->loopsection('\\1', '\\2', '\\3', '\\4')", $template);
-			$template = preg_replace("/\{loop\s+$this->vtag_regexp\s+$this->vtag_regexp\}(.+?)\{\/loop\}/ies", "\$this->loopsection('\\1', '', '\\2', '\\3')", $template);
+			$template = preg_replace_callback("/\{loop\s+$this->vtag_regexp\s+$this->vtag_regexp\s+$this->vtag_regexp\}(.+?)\{\/loop\}/ies", function($matches){return "\$this->loopsection('".$matches[1]."', '".$matches[2]."', '".$matches[3]."', '".$matches[4]."')";}, $template);
+			$template = preg_replace_callback("/\{loop\s+$this->vtag_regexp\s+$this->vtag_regexp\}(.+?)\{\/loop\}/ies", function($matches){return "\$this->loopsection('".$matches[1]."', '', '".$matches[2]."', '".$matches[3]."')";}, $template);
 		}
-		$template = preg_replace("/\{if\s+(.+?)\}/ies", "\$this->stripvtag('<? if(\\1) { ?>')", $template);
+		$template = preg_replace_callback("/\{if\s+(.+?)\}/ies", function($matches){return "\$this->stripvtag('<? if(".$matches[1].") { ?>')";}, $template);
 
-		$template = preg_replace("/\{template\s+(\w+?)\}/is", "<? include \$this->gettpl('\\1');?>", $template);
-		$template = preg_replace("/\{template\s+(.+?)\}/ise", "\$this->stripvtag('<? include \$this->gettpl(\\1); ?>')", $template);
+		$template = preg_replace_callback("/\{template\s+(\w+?)\}/is", function($matches){return "<? include \$this->gettpl('".$matches[1]."');?>";}, $template);
+		$template = preg_replace_callback("/\{template\s+(.+?)\}/ise", function($matches){return "\$this->stripvtag('<? include \$this->gettpl(".$matches."); ?>')";}, $template);
 
 
-		$template = preg_replace("/\{else\}/is", "<? } else { ?>", $template);
-		$template = preg_replace("/\{\/if\}/is", "<? } ?>", $template);
-		$template = preg_replace("/\{\/for\}/is", "<? } ?>", $template);
+		$template = preg_replace_callback("/\{else\}/is", function($matches){return "<? } else { ?>";}, $template);
+		$template = preg_replace_callback("/\{\/if\}/is", function($matches){return "<? } ?>";}, $template);
+		$template = preg_replace_callback("/\{\/for\}/is", function($matches){return "<? } ?>";}, $template);
 
-		$template = preg_replace("/$this->const_regexp/", "<?=\\1?>", $template);
+		$template = preg_replace_callback("/$this->const_regexp/", function($matches){return "<?=".$matches[1]."?>";}, $template);
 
 		$template = "<? if(!defined('UC_ROOT')) exit('Access Denied');?>\r\n$template";
-		$template = preg_replace("/(\\\$[a-zA-Z_]\w+\[)([a-zA-Z_]\w+)\]/i", "\\1'\\2']", $template);
+		$template = preg_replace_callback("/(\\\$[a-zA-Z_]\w+\[)([a-zA-Z_]\w+)\]/i", function($matches){return $matches[1]."'".$matches[2]."']";}, $template);
 
-		$template = preg_replace("/\<\?(\s{1})/is", "<?php\\1", $template);
-		$template = preg_replace("/\<\?\=(.+?)\?\>/is", "<?php echo \\1;?>", $template);
+		$template = preg_replace_callback("/\<\?(\s{1})/is", function($matches){return "<?php".$matches[1];}, $template);
+		$template = preg_replace_callback("/\<\?\=(.+?)\?\>/is", function($matches){return "<?php echo ".$matches[1].";?>";}, $template);
 
 		$fp = fopen($this->objfile, 'w');
 		fwrite($fp, $template);
@@ -116,12 +116,12 @@ class template {
 	}
 
 	function arrayindex($name, $items) {
-		$items = preg_replace("/\[([a-zA-Z_]\w*)\]/is", "['\\1']", $items);
+		$items = preg_replace_callback("/\[([a-zA-Z_]\w*)\]/is", function($matches){return "['".$matches[1]."']";}, $items);
 		return "<?=$name$items?>";
 	}
 
 	function stripvtag($s) {
-		return preg_replace("/$this->vtag_regexp/is", "\\1", str_replace("\\\"", '"', $s));
+		return preg_replace_callback("/$this->vtag_regexp/is", function($matches){return $matches[1];}, str_replace("\\\"", '"', $s));
 	}
 
 	function loopsection($arr, $k, $v, $statement) {

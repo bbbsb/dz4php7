@@ -413,9 +413,9 @@ if(!function_exists('file_put_contents')) {
 }
 
 function createtable($sql) {
-	$type = strtoupper(preg_replace("/^\s*CREATE TABLE\s+.+\s+\(.+?\).*(ENGINE|TYPE)\s*=\s*([a-z]+?).*$/isU", "\\2", $sql));
+	$type = strtoupper(preg_replace_callback("/^\s*CREATE TABLE\s+.+\s+\(.+?\).*(ENGINE|TYPE)\s*=\s*([a-z]+?).*$/isU", function($matches){return $matches[2];}, $sql));
 	$type = in_array($type, array('MYISAM', 'HEAP')) ? $type : 'MYISAM';
-	return preg_replace("/^\s*(CREATE TABLE\s+.+\s+\(.+?\)).*$/isU", "\\1", $sql).
+	return preg_replace_callback("/^\s*(CREATE TABLE\s+.+\s+\(.+?\)).*$/isU", function($matches){return $matches[1];}, $sql).
 	(mysql_get_server_info() > '4.1' ? " ENGINE=$type DEFAULT CHARSET=".DBCHARSET : " TYPE=$type");
 }
 
@@ -683,7 +683,7 @@ function runquery($sql) {
 		if($query) {
 
 			if(substr($query, 0, 12) == 'CREATE TABLE') {
-				$name = preg_replace("/CREATE TABLE ([a-z0-9_]+) .*/is", "\\1", $query);
+				$name = preg_replace_callback("/CREATE TABLE ([a-z0-9_]+) .*/is", function($matches){return $matches[1];}, $query);
 				showjsmessage(lang('create_table').' '.$name.' ... '.lang('succeed'));
 				$db->query(createtable($query));
 			} else {
@@ -1062,7 +1062,7 @@ function dhtmlspecialchars($string, $flags = null) {
 		if($flags === null) {
 			$string = str_replace(array('&', '"', '<', '>'), array('&amp;', '&quot;', '&lt;', '&gt;'), $string);
 			if(strpos($string, '&amp;#') !== false) {
-				$string = preg_replace('/&amp;((#(\d{3,5}|x[a-fA-F0-9]{4}));)/', '&\\1', $string);
+				$string = preg_replace_callback('/&amp;((#(\d{3,5}|x[a-fA-F0-9]{4}));)/', function($matches){return '&'.$matches[1];}, $string);
 			}
 		} else {
 			if(PHP_VERSION < '5.4.0') {

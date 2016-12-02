@@ -124,7 +124,7 @@ class pm_clientcontrol extends base {
 					$tmp['message'] = $this->lang['pm_from'] . ': ' . $tmp['author'] . "\n" .
 							$this->lang['pm_to'] . ': ' . dhtmlspecialchars($user['username']) . "\n" .
 							$this->lang['pm_date'] . ': ' . $this->date($tmp['dateline']) . "\n\n" .
-							'[quote]' . trim(preg_replace("/(\[quote])(.*)(\[\/quote])/siU", '', $tmp['message'])) . '[/quote]' . "\n";
+							'[quote]' . trim(preg_replace_callback("/(\[quote])(.*)(\[\/quote])/siU", function($matches){return '';}, $tmp['message'])) . '[/quote]' . "\n";
 				}
 			} else {
 				!empty($_GET['msgto']) && $touser = dhtmlspecialchars($_GET['msgto']);

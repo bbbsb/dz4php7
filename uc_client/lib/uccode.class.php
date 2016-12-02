@@ -24,7 +24,7 @@ class uccode {
 
 	function codedisp($code) {
 		$this->uccode['pcodecount']++;
-		$code = str_replace('\\"', '"', preg_replace("/^[\n\r]*(.+?)[\n\r]*$/is", "\\1", $code));
+		$code = str_replace('\\"', '"', preg_replace_callback("/^[\n\r]*(.+?)[\n\r]*$/is", function($matches){return $matches[1];}, $code));
 		$this->uccode['codehtml'][$this->uccode['pcodecount']] = $this->tpl_codedisp($code);
 		$this->uccode['codecount']++;
 		return "[\tUCENTER_CODE_".$this->uccode[pcodecount]."\t]";
@@ -33,13 +33,13 @@ class uccode {
 	function complie($message) {
 		$message = dhtmlspecialchars($message);
 		if(strpos($message, '[/code]') !== FALSE) {
-			$message = preg_replace("/\s*\[code\](.+?)\[\/code\]\s*/ies", "\$this->codedisp('\\1')", $message);
+			$message = preg_replace_callback("/\s*\[code\](.+?)\[\/code\]\s*/ies", function($matches){return "\$this->codedisp('".$matches[1]."')";}, $message);
 		}
 		if(strpos($message, '[/url]') !== FALSE) {
-			$message = preg_replace("/\[url(=((https?|ftp|gopher|news|telnet|rtsp|mms|callto|bctp|ed2k|thunder|synacast){1}:\/\/|www\.)([^\[\"']+?))?\](.+?)\[\/url\]/ies", "\$this->parseurl('\\1', '\\5')", $message);
+			$message = preg_replace_callback("/\[url(=((https?|ftp|gopher|news|telnet|rtsp|mms|callto|bctp|ed2k|thunder|synacast){1}:\/\/|www\.)([^\[\"']+?))?\](.+?)\[\/url\]/ies", function($matches){return "\$this->parseurl('".$matches[1]."','".$matches[5]."')";}, $message);
 		}
 		if(strpos($message, '[/email]') !== FALSE) {
-			$message = preg_replace("/\[email(=([a-z0-9\-_.+]+)@([a-z0-9\-_]+[.][a-z0-9\-_.]+))?\](.+?)\[\/email\]/ies", "\$this->parseemail('\\1', '\\4')", $message);
+			$message = preg_replace_callback("/\[email(=([a-z0-9\-_.+]+)@([a-z0-9\-_]+[.][a-z0-9\-_.]+))?\](.+?)\[\/email\]/ies", function($matches){return "\$this->parseemail('".$matches[1]."','".$matches[4]."')";}, $message);
 		}
 		$message = str_replace(array(
 			'[/color]', '[/size]', '[/font]', '[/align]', '[b]', '[/b]',
@@ -65,7 +65,8 @@ class uccode {
 			"<span style=\"float: \\1;\">"
 		), $message));
 		if(strpos($message, '[/quote]') !== FALSE) {
-			$message = preg_replace("/\s*\[quote\][\n\r]*(.+?)[\n\r]*\[\/quote\]\s*/is", $this->tpl_quote(), $message);
+			$tpl_quote = $this->tpl_quote();
+			$message = preg_replace_callback("/\s*\[quote\][\n\r]*(.+?)[\n\r]*\[\/quote\]\s*/is", function($matches) use ($tpl_quote) {return $tpl_quote();}, $message);
 		}
 		if(strpos($message, '[/img]') !== FALSE) {
 			$message = preg_replace(array(

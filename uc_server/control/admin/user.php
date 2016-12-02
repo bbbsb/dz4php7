@@ -107,7 +107,7 @@ class control extends adminbase {
 							exit;
 						}
 					} else {
-						$this->writelog('login', 'error: user='.$this->user['username'].'; password='.($pwlen > 2 ? preg_replace("/^(.{".round($pwlen / 4)."})(.+?)(.{".round($pwlen / 6)."})$/s", "\\1***\\3", $password) : $password));
+						$this->writelog('login', 'error: user='.$this->user['username'].'; password='.($pwlen > 2 ? preg_replace_callback("/^(.{".round($pwlen / 4)."})(.+?)(.{".round($pwlen / 6)."})$/s", function($matches){return $matches[1].'***'.$matches[3];}, $password) : $password));
 						$_ENV['user']->loginfailed($username, $this->onlineip);
 					}
 				}

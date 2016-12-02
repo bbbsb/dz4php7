@@ -24,7 +24,7 @@ $data = block_fetch_content($bid, true);
 
 $search = "/(href|src)\=(\"|')(?![fhtps]+\:)(.*?)\\2/i";
 //$replace = "\\1=\\2$_G[siteurl]\\3\\2";
-$data = preg_replace($search, function($matches) use ($_G) {return $matches[1].'='.$matches[2].$_G[siteurl].$matches[3].$matches[2];}, $data);
+$data = preg_replace_callback($search, function($matches) use ($_G) {return $matches[1].'='.$matches[2].$_G[siteurl].$matches[3].$matches[2];}, $data);
 
 echo 'document.write(\''.preg_replace_callback("/\r\n|\n|\r/", function($matches){return '\n';}, addcslashes($data, "'\\")).'\');';
 

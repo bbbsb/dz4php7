@@ -91,8 +91,8 @@ class control extends adminbase {
 						$config = file_get_contents($configfile);
 						$salt = substr(uniqid(rand()), 0, 6);
 						$md5newpw = md5(md5($newpw).$salt);
-						$config = preg_replace("/define\('UC_FOUNDERSALT',\s*'.*?'\);/i", "define('UC_FOUNDERSALT', '$salt');", $config);
-						$config = preg_replace("/define\('UC_FOUNDERPW',\s*'.*?'\);/i", "define('UC_FOUNDERPW', '$md5newpw');", $config);
+						$config = preg_replace_callback("/define\('UC_FOUNDERSALT',\s*'.*?'\);/i", function($matches) use ($salt) {return "define('UC_FOUNDERSALT','".$salt."');";}, $config);
+						$config = preg_replace_callback("/define\('UC_FOUNDERPW',\s*'.*?'\);/i", function($matches) use ($md5newpw) {return "define('UC_FOUNDERPW', '".$md5newpw."');";}, $config);
 						$fp = @fopen($configfile, 'w');
 						@fwrite($fp, $config);
 						@fclose($fp);

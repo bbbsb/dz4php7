@@ -97,7 +97,7 @@ class pluginmodel {
 			unlink($certfile);
 			return array();
 		}
-		$s = preg_replace("/(#.*\s+)*/", '', $s);
+		$s = preg_replace_callback("/(#.*\s+)*/", function($matches){return '';}, $s);
 		$arr = daddslashes(unserialize(base64_decode($s)), 1);
 		return $arr;
 	}

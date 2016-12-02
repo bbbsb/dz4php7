@@ -68,7 +68,7 @@ class badwordmodel {
 		$find = preg_quote($find, "/'");
 		$find = str_replace("\\", "\\\\", $find);
 		$find = str_replace("'", "\\'", $find);
-		return '/'.preg_replace("/\\\{(\d+)\\\}/", ".{0,\\1}", $find).'/is';
+		return '/'.preg_replace_callback("/\\\{(\d+)\\\}/", function($matches){return ".{0,".$matches[1]."}";}, $find).'/is';
 	}
 }
 

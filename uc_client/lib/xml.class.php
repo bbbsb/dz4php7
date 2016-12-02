@@ -24,7 +24,7 @@ function xml_serialize($arr, $htmlon = FALSE, $isnormal = FALSE, $level = 1) {
 			$s .= $space."<item id=\"$k\">\r\n".xml_serialize($v, $htmlon, $isnormal, $level + 1).$space."</item>\r\n";
 		}
 	}
-	$s = preg_replace("/([\x01-\x08\x0b-\x0c\x0e-\x1f])+/", ' ', $s);
+	$s = preg_replace_callback("/([\x01-\x08\x0b-\x0c\x0e-\x1f])+/", function($matches){return ' ';}, $s);
 	return $level == 1 ? $s."</root>" : $s;
 }
 

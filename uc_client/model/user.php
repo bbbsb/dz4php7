@@ -76,7 +76,7 @@ class usermodel {
 		$censorusername = $this->base->get_setting('censorusername');
 		$censorusername = $censorusername['censorusername'];
 		$censorexp = '/^('.str_replace(array('\\*', "\r\n", ' '), array('.*', '|', ''), preg_quote(($censorusername = trim($censorusername)), '/')).')$/i';
-		$usernamereplaced = isset($_CACHE['badwords']['findpattern']) && !empty($_CACHE['badwords']['findpattern']) ? @preg_replace($_CACHE['badwords']['findpattern'], $_CACHE['badwords']['replace'], $username) : $username;
+		$usernamereplaced = isset($_CACHE['badwords']['findpattern']) && !empty($_CACHE['badwords']['findpattern']) ? @preg_replace_callback($_CACHE['badwords']['findpattern'], function($matches) use ($_CACHE) {return $_CACHE['badwords']['replace'];}, $username) : $username;
 		if(($usernamereplaced != $username) || ($censorusername && preg_match($censorexp, $username))) {
 			return FALSE;
 		} else {
