@@ -13,7 +13,7 @@ if(!defined('IN_DISCUZ')) {
 
 require_once libfile('function/friend');
 
-$_GET['action'] = dhtmlspecialchars(preg_replace("/[^\[A-Za-z0-9_\]]/", '', $_GET['action']));
+$_GET['action'] = dhtmlspecialchars(preg_replace_callback("/[^\[A-Za-z0-9_\]]/", function($matches){return '';}, $_GET['action']));
 $friendgrouplist = friend_group_list();
 if($_GET['action'] == 'group') {
 	$id = intval($_GET['id']);

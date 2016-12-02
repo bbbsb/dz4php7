@@ -529,9 +529,9 @@ EOF;
 				if($post['first']) {
 					unset($list[$pid]);
 				} else {
-					$post['message'] = preg_replace($_G['cache']['smilies']['searcharray'], '', $post['message']);
-					$post['message'] = preg_replace("/\{\:soso_((e\d+)|(_\d+_\d))\:\}/e", '', $post['message']);
-					$list[$pid]['message'] = cutstr(preg_replace("/\[.+?\]/ies", '', dhtmlspecialchars($post['message'])), 300) ;
+					$post['message'] = preg_replace_callback($_G['cache']['smilies']['searcharray'], function($matches){return '';}, $post['message']);
+					$post['message'] = preg_replace_callback("/\{\:soso_((e\d+)|(_\d+_\d))\:\}/e", function($matches){return '';}, $post['message']);
+					$list[$pid]['message'] = cutstr(preg_replace_callback("/\[.+?\]/ies", function($matches){return '';}, dhtmlspecialchars($post['message'])), 300) ;
 				}
 			}
 			krsort($list);

@@ -160,7 +160,7 @@ function getblogbyid($blogidarray) {
 			} else {
 				$result['message'] = getstr($result['message'], $summarylen, 0, 0, 0, -1);
 			}
-			$result['message'] = preg_replace("/&[a-z]+\;/i", '', $result['message']);
+			$result['message'] = preg_replace_callback("/&[a-z]+\;/i", function($matches){return '';}, $result['message']);
 			if($result['pic']) {
 				$result['pic'] = pic_cover_get($result['pic'], $result['picflag']);
 			}

@@ -22,7 +22,7 @@ if($tid = @intval($_GET['tid'])) {
 }
 
 $subjectenc = rawurlencode(strip_tags($subject));
-$messageenc = rawurlencode(strip_tags(preg_replace("/\[.+?\]/U", '', $message)));
+$messageenc = rawurlencode(strip_tags(preg_replace_callback("/\[.+?\]/U", function($matches){return '';}, $message)));
 $data = @implode('', file("http://keyword.discuz.com/related_kw.html?ics=".CHARSET."&ocs=".CHARSET."&title=$subjectenc&content=$messageenc"));
 
 if($data) {

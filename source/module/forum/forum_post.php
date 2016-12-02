@@ -112,12 +112,12 @@ if($_GET['action'] == 'edit' || $_GET['action'] == 'reply') {
 }
 
 if($_G['forum']['status'] == 3) {
-	$returnurl = 'forum.php?mod=forumdisplay&fid='.$_G['fid'].(!empty($_GET['extra']) ? '&action=list&'.preg_replace("/^(&)*/", '', $_GET['extra']) : '').'#groupnav';
+	$returnurl = 'forum.php?mod=forumdisplay&fid='.$_G['fid'].(!empty($_GET['extra']) ? '&action=list&'.preg_replace_callback("/^(&)*/", function($matches){return '';}, $_GET['extra']) : '').'#groupnav';
 	$nav = get_groupnav($_G['forum']);
 	$navigation = ' <em>&rsaquo;</em> <a href="group.php">'.$_G['setting']['navs'][3]['navname'].'</a> '.$nav['nav'];
 } else {
 	loadcache('forums');
-	$returnurl = 'forum.php?mod=forumdisplay&fid='.$_G['fid'].(!empty($_GET['extra']) ? '&'.preg_replace("/^(&)*/", '', $_GET['extra']) : '');
+	$returnurl = 'forum.php?mod=forumdisplay&fid='.$_G['fid'].(!empty($_GET['extra']) ? '&'.preg_replace_callback("/^(&)*/", function($matches){return '';}, $_GET['extra']) : '');
 	$navigation = ' <em>&rsaquo;</em> <a href="forum.php">'.$_G['setting']['navs'][2]['navname'].'</a>';
 
 	if($_G['forum']['type'] == 'sub') {
@@ -206,7 +206,7 @@ $polloptions = isset($polloptions) ? censor(trim($polloptions)) : '';
 $readperm = isset($_GET['readperm']) ? intval($_GET['readperm']) : 0;
 $price = isset($_GET['price']) ? intval($_GET['price']) : 0;
 
-if(empty($bbcodeoff) && !$_G['group']['allowhidecode'] && !empty($message) && preg_match("/\[hide=?\d*\].*?\[\/hide\]/is", preg_replace("/(\[code\](.+?)\[\/code\])/is", ' ', $message))) {
+if(empty($bbcodeoff) && !$_G['group']['allowhidecode'] && !empty($message) && preg_match("/\[hide=?\d*\].*?\[\/hide\]/is", preg_replace_callback("/(\[code\](.+?)\[\/code\])/is", function($matches){return ' ';}, $message))) {
 	showmessage('post_hide_nopermission');
 }
 

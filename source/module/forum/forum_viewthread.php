@@ -912,7 +912,7 @@ if(empty($postlist)) {
 	showmessage('post_not_found');
 } elseif(!defined('IN_MOBILE_API')) {
 	foreach($postlist as $pid => $post) {
-		$postlist[$pid]['message'] = preg_replace("/\[attach\]\d+\[\/attach\]/i", '', $postlist[$pid]['message']);
+		$postlist[$pid]['message'] = preg_replace_callback("/\[attach\]\d+\[\/attach\]/i", function($matches){return '';}, $postlist[$pid]['message']);
 	}
 }
 
@@ -992,7 +992,7 @@ if(empty($_GET['viewpid'])) {
 		$_G['widthauto'] = 0;
 		$sufix = '_album';
 		$post = &$postlist[$_G['forum_firstpid']];
-		$post['message'] = cutstr(strip_tags(preg_replace('/(<ignore_js_op>.*<\/ignore_js_op>)/is', '', $post['message'])), 200);
+		$post['message'] = cutstr(strip_tags(preg_replace_callback('/(<ignore_js_op>.*<\/ignore_js_op>)/is', function($matches){return '';}, $post['message'])), 200);
 		require_once libfile('thread/album', 'include');
 	}
 	include template('diy:forum/viewthread'.$sufix.':'.$_G['fid']);
@@ -1176,7 +1176,7 @@ function viewthread_procpost($post, $lastvisit, $ordertype, $maxposition = 0) {
 				$_G['forum_attachtags'][$post['pid']] = $matchaids[1];
 			}
 		} else {
-			$post['message'] = preg_replace("/\[attach\](\d+)\[\/attach\]/i", '', $post['message']);
+			$post['message'] = preg_replace_callback("/\[attach\](\d+)\[\/attach\]/i", function($matches){return '';}, $post['message']);
 		}
 	}
 
@@ -1197,7 +1197,7 @@ function viewthread_procpost($post, $lastvisit, $ordertype, $maxposition = 0) {
 			if(!defined('IN_MOBILE')) {
 				$messageindex = false;
 				if(strpos($post['message'], '[/index]') !== FALSE) {
-					$post['message'] = preg_replace("/\s?\[index\](.+?)\[\/index\]\s?/ies", "parseindex('\\1', '$post[pid]')", $post['message']);
+					$post['message'] = preg_replace_callback("/\s?\[index\](.+?)\[\/index\]\s?/ies", function($matches) use ($post) {return "parseindex('".$matches[1]."', '$post[pid]')";}, $post['message']);
 					$messageindex = true;
 					unset($_GET['threadindex']);
 				}
@@ -1217,7 +1217,7 @@ function viewthread_procpost($post, $lastvisit, $ordertype, $maxposition = 0) {
 						unset($postbg);
 					} else {
 						$cp = 0;
-						$post['message'] = preg_replace("/\s?\[page\]\s?/is", '', $post['message']);
+						$post['message'] = preg_replace_callback("/\s?\[page\]\s?/is", function($matches){return '';}, $post['message']);
 					}
 					if($_GET['cp'] != 'all' && strpos($post['message'], '[/index]') === FALSE && empty($_GET['threadindex']) && !$messageindex) {
 						$_G['forum_posthtml']['footer'][$post['pid']] .= '<div id="threadpage"></div><script type="text/javascript" reload="1">show_threadpage('.$post['pid'].', '.$cp.', '.count($messagearray).', '.($_GET['from'] == 'preview' ? '1' : '0').');</script>';
@@ -1239,20 +1239,21 @@ function viewthread_procpost($post, $lastvisit, $ordertype, $maxposition = 0) {
 					$post['message'] = parse_related_link($post['message'], $relatedtype);
 				}
 				if(strpos($post['message'], '[/begin]') !== FALSE) {
-					$post['message'] = preg_replace("/\[begin(=\s*([^\[\<\r\n]*?)\s*,(\d*),(\d*),(\d*),(\d*))?\]\s*([^\[\<\r\n]+?)\s*\[\/begin\]/ies", $_G['cache']['usergroups'][$post['groupid']]['allowbegincode'] ? "parsebegin('\\2', '\\7', '\\3', '\\4', '\\5', '\\6');" : '', $post['message']);
+					$replacement_check = $_G['cache']['usergroups'][$post['groupid']]['allowbegincode'];
+					$post['message'] = preg_replace_callback("/\[begin(=\s*([^\[\<\r\n]*?)\s*,(\d*),(\d*),(\d*),(\d*))?\]\s*([^\[\<\r\n]+?)\s*\[\/begin\]/ies", function($matches) use ($replacement_check) {return $replacement_check ? "parsebegin('".$matches[2]."', '".$matches[7]."', '".$matches[3]."', '".$matches[4]."', '".$matches[5]."', '".$matches[6]."');" : '';}, $post['message']);
 				}
 			}
 		}
 	}
 	if(defined('IN_ARCHIVER') || defined('IN_MOBILE') || !$post['first']) {
 		if(strpos($post['message'], '[page]') !== FALSE) {
-			$post['message'] = preg_replace("/\s?\[page\]\s?/is", '', $post['message']);
+			$post['message'] = preg_replace_callback("/\s?\[page\]\s?/is", function($matches){return '';}, $post['message']);
 		}
 		if(strpos($post['message'], '[/index]') !== FALSE) {
-			$post['message'] = preg_replace("/\s?\[index\](.+?)\[\/index\]\s?/is", '', $post['message']);
+			$post['message'] = preg_replace_callback("/\s?\[index\](.+?)\[\/index\]\s?/is", function($matches){return '';}, $post['message']);
 		}
 		if(strpos($post['message'], '[/begin]') !== FALSE) {
-			$post['message'] = preg_replace("/\[begin(=\s*([^\[\<\r\n]*?)\s*,(\d*),(\d*),(\d*),(\d*))?\]\s*([^\[\<\r\n]+?)\s*\[\/begin\]/ies", '', $post['message']);
+			$post['message'] = preg_replace_callback("/\[begin(=\s*([^\[\<\r\n]*?)\s*,(\d*),(\d*),(\d*),(\d*))?\]\s*([^\[\<\r\n]+?)\s*\[\/begin\]/ies", function($matches){return '';}, $post['message']);
 		}
 	}
 	if($imgcontent) {
@@ -1548,7 +1549,7 @@ function getrelateitem($tagarray, $tid, $relatenum, $relatetime, $relatecache = 
 function rushreply_rule () {
 	global $rushresult;
 	if(!empty($rushresult['rewardfloor'])) {
-		$rushresult['rewardfloor'] = preg_replace('/\*+/', '*', $rushresult['rewardfloor']);
+		$rushresult['rewardfloor'] = preg_replace_callback('/\*+/', function($matches){return '*';}, $rushresult['rewardfloor']);
 		$rewardfloorarr = explode(',', $rushresult['rewardfloor']);
 		if($rewardfloorarr) {
 			foreach($rewardfloorarr as $var) {
@@ -1580,8 +1581,8 @@ function checkrushreply($post) {
 function parseindex($nodes, $pid) {
 	global $_G;
 	$nodes = dhtmlspecialchars($nodes);
-	$nodes = preg_replace('/(\**?)\[#(\d+)\](.+?)[\r\n]/', "<a page=\"\\2\" sub=\"\\1\">\\3</a>", $nodes);
-	$nodes = preg_replace('/(\**?)\[#(\d+),(\d+)\](.+?)[\r\n]/', "<a tid=\"\\2\" pid=\"\\3\" sub=\"\\1\">\\4</a>", $nodes);
+	$nodes = preg_replace_callback('/(\**?)\[#(\d+)\](.+?)[\r\n]/', function($matches){return "<a page=\"".$matches[2]."\" sub=\"".$matches[1]."\">\\3</a>";}, $nodes);
+	$nodes = preg_replace_callback('/(\**?)\[#(\d+),(\d+)\](.+?)[\r\n]/', function($matches){return "<a tid=\"".$matches[2]."\" pid=\"".$matches[3]."\" sub=\"".$matches[1]."\">".$matches[4]."</a>";}, $nodes);
 	$_G['forum_posthtml']['header'][$pid] .= '<div id="threadindex">'.$nodes.'</div><script type="text/javascript" reload="1">show_threadindex('.$pid.', '.($_GET['from'] == 'preview' ? '1' : '0').')</script>';
 	return '';
 }

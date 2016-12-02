@@ -260,12 +260,12 @@ if($_GET['action'] == 'paysucceed') {
 	foreach(C::t('forum_postcomment')->fetch_all_by_search(null, $_GET['pid'], null, null, null, null, null, $start_limit, $commentlimit) as $comment) {
 		$comment['avatar'] = avatar($comment['authorid'], 'small');
 		$comment['dateline'] = dgmdate($comment['dateline'], 'u');
-		$comment['comment'] = str_replace(array('[b]', '[/b]', '[/color]'), array('<b>', '</b>', '</font>'), preg_replace("/\[color=([#\w]+?)\]/i", "<font color=\"\\1\">", $comment['comment']));
+		$comment['comment'] = str_replace(array('[b]', '[/b]', '[/color]'), array('<b>', '</b>', '</font>'), preg_replace_callback("/\[color=([#\w]+?)\]/i", function($matches){return "<font color='".$matches[1]."'>";}, $comment['comment']));
 		$comments[] = $comment;
 	}
 	$totalcomment = C::t('forum_postcomment')->fetch_standpoint_by_pid($_GET['pid']);
 	$totalcomment = $totalcomment['comment'];
-	$totalcomment = preg_replace('/<i>([\.\d]+)<\/i>/e', "'<i class=\"cmstarv\" style=\"background-position:20px -'.(intval(\\1) * 16).'px\">'.sprintf('%1.1f', \\1).'</i>'.(\$cic++ % 2 ? '<br />' : '');", $totalcomment);
+	$totalcomment = preg_replace_callback('/<i>([\.\d]+)<\/i>/e', function($matches){ return "'<i class=\"cmstarv\" style=\"background-position:20px -'.(intval(\\1) * 16).'px\">'.sprintf('%1.1f', ".$matches[1].").'</i>'.(\$cic++ % 2 ? '<br />' : '');";}, $totalcomment);
 	$count = C::t('forum_postcomment')->count_by_search(null, $_GET['pid']);
 	$multi = multi($count, $commentlimit, $page, "forum.php?mod=misc&action=commentmore&tid=$_G[tid]&pid=$_GET[pid]");
 	include template('forum/comment_more');
@@ -577,8 +577,8 @@ if($_GET['action'] == 'votepoll' && submitcheck('pollsubmit', 1)) {
 		if(empty($polloptionid)) {
 			$polloptionid = $options['polloptionid'];
 		}
-		$options['polloption'] = preg_replace("/\[url=(https?){1}:\/\/([^\[\"']+?)\](.+?)\[\/url\]/i",
-			"<a href=\"\\1://\\2\" target=\"_blank\">\\3</a>", $options['polloption']);
+		$options['polloption'] = preg_replace_callback("/\[url=(https?){1}:\/\/([^\[\"']+?)\](.+?)\[\/url\]/i",
+			function($matches){return "<a href=\"".$matches[1]."://".$matches[2]."\" target=\"_blank\">".$matches[3]."</a>";}, $options['polloption']);
 		$polloptions[] = $options;
 	}
 
@@ -1340,7 +1340,7 @@ if($_GET['action'] == 'votepoll' && submitcheck('pollsubmit', 1)) {
 	$activity['starttimefrom'] = dgmdate($activity['starttimefrom'], 'dt');
 	$activity['starttimeto'] = $activity['starttimeto'] ? dgmdate($activity['starttimeto'], 'dt') : 0;
 	$activity['expiration'] = $activity['expiration'] ? dgmdate($activity['expiration'], 'dt') : 0;
-	$activity['message'] = trim(preg_replace('/\[.+?\]/', '', $activity['message']));
+	$activity['message'] = trim(preg_replace_callback('/\[.+?\]/', function($matches){return '';}, $activity['message']));
 	$applynumbers = C::t('forum_activityapply')->fetch_count_for_thread($_G['tid']);
 
 	$applylist = array();

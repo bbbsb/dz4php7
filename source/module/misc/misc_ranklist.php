@@ -204,7 +204,7 @@ function getranklist_blog($num = 20, $view = 'hot', $orderby = 'all') {
 		$blog['rank'] = $rank;
 		$blog['dateline'] = dgmdate($blog['dateline']);
 		$blog['avatar'] = avatar($blog['uid'], 'small');
-		$blog['message'] = preg_replace('/<([^>]*?)>/', '', $blog['message']);
+		$blog['message'] = preg_replace_callback('/<([^>]*?)>/', function($matches){return '';}, $blog['message']);
 		$blog['message'] = messagecutstr($blog['message'], 140);
 		$data[] = $blog;
 	}

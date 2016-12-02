@@ -305,11 +305,11 @@ if(!submitcheck('searchsubmit', 1)) {
 							$spx_matchmode = "PHRASE";
 							$s->setMatchMode(SPH_MATCH_PHRASE);
 						} elseif(preg_match("(AND|\+|&|\s)", $srchtxt) && !preg_match("(OR|\|)", $srchtxt)) {
-							$srchtxt = preg_replace("/( AND |&| )/is", "+", $srchtxt);
+							$srchtxt = preg_replace_callback("/( AND |&| )/is", function($matches){return '+';}, $srchtxt);
 							$spx_matchmode = "ALL";
 							$s->setMatchMode(SPH_MATCH_ALL);
 						} else {
-							$srchtxt = preg_replace("/( OR |\|)/is", "+", $srchtxt);
+							$srchtxt = preg_replace_callback("/( OR |\|)/is", function($matches){return '+';}, $srchtxt);
 							$spx_matchmode = 'ANY';
 							$s->setMatchMode(SPH_MATCH_ANY);
 						}

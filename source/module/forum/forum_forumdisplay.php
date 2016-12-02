@@ -207,7 +207,7 @@ if(empty($_G['forum']['picstyle']) && isset($_G['cookie']['forum_lastvisit']) &&
 	$forumlastvisit = $a[1];
 	unset($a);
 }
-dsetcookie('forum_lastvisit', preg_replace("/D\_".$_G['fid']."\_\d+/", '', $_G['cookie']['forum_lastvisit']).'D_'.$_G['fid'].'_'.TIMESTAMP, 604800);
+dsetcookie('forum_lastvisit', preg_replace_callback("/D\_".$_G['fid']."\_\d+/", function($matches){return '';}, $_G['cookie']['forum_lastvisit']).'D_'.$_G['fid'].'_'.TIMESTAMP, 604800);
 
 $threadtableids = !empty($_G['cache']['threadtableids']) ? $_G['cache']['threadtableids'] : array();
 

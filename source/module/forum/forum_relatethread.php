@@ -57,8 +57,8 @@ if($data) {
 			foreach($valuearray as $key => $value) {
 				if($values[$index['title'][$key]]['value']) {
 					$relatedthreadlist[$key][$tag] = !empty($chs) ? $chs->convert(trim($values[$value]['value'])) : trim($values[$value]['value']);
-					$relatedthreadlist[$key]['fid'] = !$values[$index['fid'][$key]]['value'] ? preg_replace("/(.+?)\/forum\-(\d+)\-(\d+)\.html/", "\\2", trim($values[$index['curl'][$key]]['value'])) : trim($values[$index['fid'][$key]]['value']);
-					$relatedthreadlist[$key]['tid'] = !$values[$index['tid'][$key]]['value'] ? preg_replace("/(.+?)\/thread\-(\d+)\-(\d+)-(\d+)\.html/", "\\2", trim($values[$index['surl'][$key]]['value'])) : trim($values[$index['tid'][$key]]['value']);
+					$relatedthreadlist[$key]['fid'] = !$values[$index['fid'][$key]]['value'] ? preg_replace_callback("/(.+?)\/forum\-(\d+)\-(\d+)\.html/", function($matches){return $matches[2];}, trim($values[$index['curl'][$key]]['value'])) : trim($values[$index['fid'][$key]]['value']);
+					$relatedthreadlist[$key]['tid'] = !$values[$index['tid'][$key]]['value'] ? preg_replace_callback("/(.+?)\/thread\-(\d+)\-(\d+)-(\d+)\.html/", function($matches){return $matches[2];}, trim($values[$index['surl'][$key]]['value'])) : trim($values[$index['tid'][$key]]['value']);
 				}
 			}
 		} elseif(in_array($tag, array('kw', 'ekw'))) {

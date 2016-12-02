@@ -28,7 +28,7 @@ if($_GET['action'] == 'update') {
 		$question = make_secqaa();
 	}
 
-	$message = preg_replace("/\r|\n/", '', $question);
+	$message = preg_replace_callback("/\r|\n/", function($matches){return '';}, $question);
 	$message = str_replace("'", "\'", $message);
 	$seclang = lang('forum/misc');
 echo <<<EOF

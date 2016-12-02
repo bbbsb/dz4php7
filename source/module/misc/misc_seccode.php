@@ -48,7 +48,7 @@ if($_GET['action'] == 'update') {
 						ob_start();
 						$seccode = $code->make($idhash, $modid);
 						make_seccode($seccode);
-						$message = preg_replace("/\r|\n/", '', ob_get_contents());
+						$message = preg_replace_callback("/\r|\n/", function($matches){return '';}, ob_get_contents());
 						ob_end_clean();
 					}
 				}
