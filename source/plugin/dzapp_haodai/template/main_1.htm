@@ -90,7 +90,7 @@
 		<!--{eval $nav_showmenu = strpos($nav['nav'], 'onmouseover="showMenu(');}-->
 		<!--{eval $nav_navshow = strpos($nav['nav'], 'onmouseover="navShow(')}-->
 		<!--{if $nav_hidden !== false || $nav_navshow !== false}-->
-		<!--{eval $nav['nav'] = preg_replace("/onmouseover\=\"(.*?)\"/i", '',$nav['nav'])}-->
+		<!--{eval $nav['nav'] = preg_replace_callback("/onmouseover\=\"(.*?)\"/i", function($matches){return '';},$nav['nav'])}-->
 		<!--{/if}-->
 		<!--{if $nav['available'] && (!$nav['level'] || ($nav['level'] == 1 && $_G['uid']) || ($nav['level'] == 2 && $_G['adminid'] > 0) || ($nav['level'] == 3 && $_G['adminid'] == 1))}--><li {$nav[nav]}></li><!--{/if}-->
 	<!--{/loop}-->

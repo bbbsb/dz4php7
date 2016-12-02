@@ -1287,12 +1287,12 @@ function install_uc_server() {
 
 	uc_write_config($config, ROOT_PATH.'./uc_server/data/config.inc.php', $password);
 
-	@unlink(ROOT_PATH.'./uc_server/install/index.php');
-	@unlink(ROOT_PATH.'./uc_server/data/cache/settings.php');
+	//@unlink(ROOT_PATH.'./uc_server/install/index.php');
+	//@unlink(ROOT_PATH.'./uc_server/data/cache/settings.php');
 	@touch(ROOT_PATH.'./uc_server/data/upgrade.lock');
 	@touch(ROOT_PATH.'./uc_server/data/install.lock');
-	dir_clear(ROOT_PATH.'./uc_server/data/cache');
-	dir_clear(ROOT_PATH.'./uc_server/data/view');
+	//dir_clear(ROOT_PATH.'./uc_server/data/cache');
+	//dir_clear(ROOT_PATH.'./uc_server/data/view');
 }
 
 function install_data($username, $uid) {

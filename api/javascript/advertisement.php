@@ -18,6 +18,6 @@ loadcore();
 $adid = $_GET['adid'];
 $data = adshow($adid);
 
-echo 'document.write(\''.preg_replace("/\r\n|\n|\r/", '\n', addcslashes($data, "'\\")).'\');';
+echo 'document.write(\''.preg_replace_callback("/\r\n|\n|\r/", function($matches){return '\n';}, addcslashes($data, "'\\")).'\');';
 
 ?>
