@@ -51,7 +51,7 @@ $uchidden = getgpc('uchidden');
 if(in_array($method, array('app_reg', 'ext_info'))) {
 	$isHTTPS = ($_SERVER['HTTPS'] && strtolower($_SERVER['HTTPS']) != 'off') ? true : false;
 	$PHP_SELF = $_SERVER['PHP_SELF'] ? $_SERVER['PHP_SELF'] : $_SERVER['SCRIPT_NAME'];
-	$bbserver = 'http'.($isHTTPS ? 's' : '').'://'.preg_replace("/\:\d+/", '', $_SERVER['HTTP_HOST']).($_SERVER['SERVER_PORT'] && $_SERVER['SERVER_PORT'] != 80 && $_SERVER['SERVER_PORT'] != 443 ? ':'.$_SERVER['SERVER_PORT'] : '');
+	$bbserver = 'http'.($isHTTPS ? 's' : '').'://'.preg_replace_callback("/\:\d+/", function($matches){return '';}, $_SERVER['HTTP_HOST']).($_SERVER['SERVER_PORT'] && $_SERVER['SERVER_PORT'] != 80 && $_SERVER['SERVER_PORT'] != 443 ? ':'.$_SERVER['SERVER_PORT'] : '');
 	$default_ucapi = $bbserver.'/ucenter';
 	$default_appurl = $bbserver.substr($PHP_SELF, 0, strrpos($PHP_SELF, '/') - 8);
 }
@@ -126,7 +126,7 @@ if($method == 'show_license') {
 		'apptagtemplates[fields][dateline]='.urlencode($lang['tagtemplates_dateline']).'&'.
 		'apptagtemplates[fields][url]='.urlencode($lang['tagtemplates_url']);
 
-		$ucapi = preg_replace("/\/$/", '', trim($ucapi));
+		$ucapi = preg_replace_callback("/\/$/", function($matches){return '';}, trim($ucapi));
 		if(empty($ucapi) || !preg_match("/^(http:\/\/)/i", $ucapi)) {
 			show_msg('uc_url_invalid', $ucapi, 0);
 		} else {

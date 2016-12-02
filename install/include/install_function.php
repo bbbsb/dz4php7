@@ -462,9 +462,9 @@ if(!function_exists('file_put_contents')) {
 
 function createtable($sql, $dbver) {
 
-	$type = strtoupper(preg_replace("/^\s*CREATE TABLE\s+.+\s+\(.+?\).*(ENGINE|TYPE)\s*=\s*([a-z]+?).*$/isU", "\\2", $sql));
+	$type = strtoupper(preg_replace_callback("/^\s*CREATE TABLE\s+.+\s+\(.+?\).*(ENGINE|TYPE)\s*=\s*([a-z]+?).*$/isU", function($matches){return $matches[2];}, $sql));
 	$type = in_array($type, array('MYISAM', 'HEAP', 'MEMORY')) ? $type : 'MYISAM';
-	return preg_replace("/^\s*(CREATE TABLE\s+.+\s+\(.+?\)).*$/isU", "\\1", $sql).
+	return preg_replace_callback("/^\s*(CREATE TABLE\s+.+\s+\(.+?\)).*$/isU", function($matches){return $matches[1];}, $sql).
 	($dbver > '4.1' ? " ENGINE=$type DEFAULT CHARSET=".DBCHARSET : " TYPE=$type");
 }
 
@@ -735,7 +735,7 @@ function runquery($sql) {
 		if($query) {
 
 			if(substr($query, 0, 12) == 'CREATE TABLE') {
-				$name = preg_replace("/CREATE TABLE ([a-z0-9_]+) .*/is", "\\1", $query);
+				$name = preg_replace_callback("/CREATE TABLE ([a-z0-9_]+) .*/is", function($matches){return $matches[1];}, $query);
 				showjsmessage(lang('create_table').' '.$name.' ... '.lang('succeed'));
 				$db->query(createtable($query, $db->version()));
 			} else {
@@ -770,7 +770,7 @@ function runucquery($sql, $tablepre) {
 		if($query) {
 
 			if(substr($query, 0, 12) == 'CREATE TABLE') {
-				$name = preg_replace("/CREATE TABLE ([a-z0-9_]+) .*/is", "\\1", $query);
+				$name = preg_replace_callback("/CREATE TABLE ([a-z0-9_]+) .*/is", function($matches){return $matches[1];}, $query);
 				showjsmessage(lang('create_table').' '.$name.' ... '.lang('succeed'));
 				$db->query(createtable($query, $db->version()));
 			} else {
@@ -1246,7 +1246,7 @@ function install_uc_server() {
 	$pathinfo = pathinfo($_SERVER['PHP_SELF']);
 	$pathinfo['dirname'] = substr($pathinfo['dirname'], 0, -8);
 	$isHTTPS = ($_SERVER['HTTPS'] && strtolower($_SERVER['HTTPS']) != 'off') ? true : false;
-	$appurl = 'http'.($isHTTPS ? 's' : '').'://'.preg_replace("/\:\d+/", '', $_SERVER['HTTP_HOST']).($_SERVER['SERVER_PORT'] && $_SERVER['SERVER_PORT'] != 80 && $_SERVER['SERVER_PORT'] != 443 ? ':'.$_SERVER['SERVER_PORT'] : '').$pathinfo['dirname'];
+	$appurl = 'http'.($isHTTPS ? 's' : '').'://'.preg_replace_callback("/\:\d+/", function($matches){return '';}, $_SERVER['HTTP_HOST']).($_SERVER['SERVER_PORT'] && $_SERVER['SERVER_PORT'] != 80 && $_SERVER['SERVER_PORT'] != 443 ? ':'.$_SERVER['SERVER_PORT'] : '').$pathinfo['dirname'];
 	$ucapi = $appurl.'/uc_server';
 	$ucip = '';
 	$app_tagtemplates = 'apptagtemplates[template]='.urlencode('<a href="{url}" target="_blank">{subject}</a>').'&'.
@@ -1383,11 +1383,11 @@ function save_diy_data($primaltplname, $targettplname, $data, $database = false)
 		$html .= '<div id="'.$key.'" class="area">';
 		$html .= getframehtml($value);
 		$html .= '</div>';
-		$content = preg_replace("/(\<\!\-\-\[diy\=$key\]\-\-\>).+?(\<\!\-\-\[\/diy\]\-\-\>)/is", "\\1".$html."\\2", $content);
+		$content = preg_replace_callback("/(\<\!\-\-\[diy\=$key\]\-\-\>).+?(\<\!\-\-\[\/diy\]\-\-\>)/is", function($matches) use ($html) {return $matches[1].$html.$matches[2];}, $content);
 	}
-	$content = preg_replace("/(\<style id\=\"diy_style\" type\=\"text\/css\"\>).*(\<\/style\>)/is", "\\1".$data['spacecss']."\\2", $content);
+	$content = preg_replace_callback("/(\<style id\=\"diy_style\" type\=\"text\/css\"\>).*(\<\/style\>)/is", function($matches) use ($data) {return $matches[1].$data['spacecss'].$matches[2];}, $content);
 	if (!empty($data['style'])) {
-		$content = preg_replace("/(\<link id\=\"style_css\" rel\=\"stylesheet\" type\=\"text\/css\" href\=\").+?(\"\>)/is", "\\1".$data['style']."\\2", $content);
+		$content = preg_replace_callback("/(\<link id\=\"style_css\" rel\=\"stylesheet\" type\=\"text\/css\" href\=\").+?(\"\>)/is", function($matches) use ($data) {return $matches[1].$data['style'].$matches[2];}, $content);
 	}
 
 	$tplfile =ROOT_PATH.'./data/diy/'.$tpldirectory.'/'.$targettplname.'.htm';
@@ -1516,7 +1516,7 @@ function gettitlehtml($title, $type) {
 		$one .= '</span>';
 
 		$siteurl = str_replace(array('/','.'),array('\/','\.'),$_G['siteurl']);
-		$one = preg_replace('/\"'.$siteurl.'(.*?)\"/','"$1"',$one);
+		$one = preg_replace_callback('/\"'.$siteurl.'(.*?)\"/', function($matches){return '"'.$matches[1].'"';},$one);
 
 		$html = $k === 'first' ? $one.$html : $html.$one;
 	}
@@ -1707,7 +1707,7 @@ function dhtmlspecialchars($string) {
 	} else {
 		$string = str_replace(array('&', '"', '<', '>'), array('&amp;', '&quot;', '&lt;', '&gt;'), $string);
 		if(strpos($string, '&amp;#') !== false) {
-			$string = preg_replace('/&amp;((#(\d{3,5}|x[a-fA-F0-9]{4}));)/', '&\\1', $string);
+			$string = preg_replace_callback('/&amp;((#(\d{3,5}|x[a-fA-F0-9]{4}));)/', function($matches){return '&'.$matches[1];}, '&\\1', $string);
 		}
 	}
 	return $string;
