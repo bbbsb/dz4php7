@@ -1,2 +1,5 @@
 /.idea
 /data
+/config
+/uc_client/data/cache
+/uc_server/data
