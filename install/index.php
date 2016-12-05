@@ -263,6 +263,7 @@ switch($method) {
 
 		if($submit) {
 
+			// 数据库检查级创建
 			$step = $step + 1;
 			if(empty($dbname)) {
 				show_msg('dbname_invalid', $dbname, 0);
@@ -341,9 +342,11 @@ switch($method) {
 			$sql = file_get_contents($sqlfile);
 			$sql = str_replace("\r\n", "\n", $sql);
 
+			// 建表
 			runquery($sql);
 			runquery($extrasql);
 
+			// 填充数据
 			$sql = file_get_contents(ROOT_PATH.'./install/data/install_data.sql');
 			$sql = str_replace("\r\n", "\n", $sql);
 			runquery($sql);
@@ -427,7 +430,7 @@ switch($method) {
 			$data = addslashes(serialize($userstats));
 			$db->query("REPLACE INTO {$tablepre}common_syscache (cname, ctype, dateline, data) VALUES ('userstats', '$ctype', '".time()."', '$data')");
 
-			touch($lockfile);
+			//touch($lockfile);
 			VIEW_OFF && show_msg('initdbresult_succ');
 
 			if(!VIEW_OFF) {
@@ -448,7 +451,7 @@ switch($method) {
 
 	# step = 4
 	case 'ext_info':
-		@touch($lockfile);
+		//@touch($lockfile);
 		if(VIEW_OFF) {
 			show_msg('ext_info_succ');
 		} else {

@@ -1291,8 +1291,8 @@ function install_uc_server() {
 
 	//@unlink(ROOT_PATH.'./uc_server/install/index.php');
 	//@unlink(ROOT_PATH.'./uc_server/data/cache/settings.php');
-	@touch(ROOT_PATH.'./uc_server/data/upgrade.lock');
-	@touch(ROOT_PATH.'./uc_server/data/install.lock');
+	//@touch(ROOT_PATH.'./uc_server/data/upgrade.lock');
+	//@touch(ROOT_PATH.'./uc_server/data/install.lock');
 	//dir_clear(ROOT_PATH.'./uc_server/data/cache');
 	//dir_clear(ROOT_PATH.'./uc_server/data/view');
 }
